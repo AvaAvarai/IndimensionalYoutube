@@ -12,6 +12,12 @@ Youtube connection with pytube.
 
 UI with PyQt5.
 
+All videos are hosted on the YouTube platform.
+
 ## Pip Packages
 
 PyQt5 PyQtWebEngine pytube
+
+## License
+
+This project is available for free under the MIT License.
