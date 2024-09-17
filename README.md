@@ -18,6 +18,13 @@ All videos are hosted on the YouTube platform.
 
 PyQt5 PyQtWebEngine pytube
 
+## Future Work
+
+- Autoplay
+- Video length search
+- Topical search versus just single phrase search for a group of phrases
+- Dark mode, UI, CRT skin
+
 ## License
 
 This project is available for free under the MIT License.
