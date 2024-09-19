@@ -50,8 +50,9 @@ class RandomYouTubePlayer(QMainWindow):
 
     def init_ui(self):
         self.setWindowTitle('IndimensionalTube')
-        self.resize(800, 600)
-
+        self.resize(800, 775)
+        # set resizable false
+        self.setFixedSize(800, 775)
         # Central widget
         central_widget = QWidget()
         self.setCentralWidget(central_widget)
@@ -73,7 +74,7 @@ class RandomYouTubePlayer(QMainWindow):
         self.web_view = QWebEngineView()
 
         # Adjust size and position of the video player to fit within the CRT screen area
-        self.web_view.setFixedSize(625, 400)  # Adjust this size to fit the CRT screen
+        self.web_view.setFixedSize(625, 475)  # Adjust this size to fit the CRT screen
         video_layout.addWidget(self.web_view)
 
         # Spacer for horizontal centering
