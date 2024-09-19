@@ -2,11 +2,11 @@ import sys
 import random
 from PyQt6.QtWidgets import (
     QApplication, QMainWindow, QWidget, QPushButton, QHBoxLayout,
-    QVBoxLayout, QSlider, QLabel
+    QVBoxLayout, QSlider, QLabel, QInputDialog
 )
 from PyQt6.QtGui import QIcon, QPixmap, QPalette, QBrush
 from PyQt6.QtWebEngineWidgets import QWebEngineView
-from PyQt6.QtCore import Qt, QObject, pyqtSlot, QUrl, QSize
+from PyQt6.QtCore import Qt, QObject, pyqtSlot, QUrl
 from PyQt6.QtWebChannel import QWebChannel
 from pytube import Search
 
@@ -285,7 +285,6 @@ class RandomYouTubePlayer(QMainWindow):
 
     def set_static_filter(self):
         # Open a dialog to set the static filter
-        from PyQt6.QtWidgets import QInputDialog
         text, ok = QInputDialog.getText(self, 'Search Keyword', 'Enter search term:')
         if ok and text:
             self.static_filter = text
