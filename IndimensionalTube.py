@@ -24,9 +24,13 @@ class RandomYouTubePlayer(QMainWindow):
     def __init__(self):
         super().__init__()
         self.static_filter = None  # Initialize the static filter before init_ui
+        self.current_genre = None  # Track the current genre for Courageous Shuffle
 
         # Set the application window icon
         self.setWindowIcon(QIcon("icon.png"))  # Ensure icon.png is in the project directory
+
+        # Genres for Courageous Shuffle
+        self.genres = ['Music', 'Gaming', 'News', 'Sports', 'Comedy', 'Education', 'Film', 'Technology', 'Travel']
 
         # Load word list from dict.txt
         try:
@@ -100,6 +104,11 @@ class RandomYouTubePlayer(QMainWindow):
         self.shuffle_button.clicked.connect(self.shuffle_video)
         control_layout.addWidget(self.shuffle_button)
 
+        # Courageous Shuffle button
+        self.courageous_button = QPushButton('Courageous Shuffle')
+        self.courageous_button.clicked.connect(self.courageous_shuffle_video)
+        control_layout.addWidget(self.courageous_button)
+
         # Static Filter button
         self.filter_button = QPushButton('Search Keyword')
         self.filter_button.clicked.connect(self.set_static_filter)
@@ -134,6 +143,10 @@ class RandomYouTubePlayer(QMainWindow):
         else:
             # Source the dictionary instead of static terms
             query = random.choice(self.word_list)
+
+        # Simulate random genre selection for the video
+        self.current_genre = random.choice(self.genres)
+        print(f"Current genre: {self.current_genre}")
 
         # Search YouTube using pytube
         search = Search(query)
@@ -229,7 +242,7 @@ class RandomYouTubePlayer(QMainWindow):
                         }}
 
                         function onPlayerReady(event) {{
-                            // Player is ready
+                            console.log("Player is ready");
                         }}
 
                         function onPlayerError(event) {{
@@ -282,6 +295,112 @@ class RandomYouTubePlayer(QMainWindow):
             self.web_view.setHtml(
                 '<h1 style="color: green; text-align: center; margin-top: 50%;">No videos found.</h1>'
             )
+
+    def courageous_shuffle_video(self):
+        """Select a video from a different genre than the current one."""
+        available_genres = [genre for genre in self.genres if genre != self.current_genre]
+        new_genre = random.choice(available_genres)
+        print(f"Courageous Shuffle! Switching from {self.current_genre} to {new_genre}")
+        self.current_genre = new_genre
+
+        # Simulate the search by genre
+        query = new_genre  # We can make the query based on the selected genre
+        search = Search(query)
+        results = search.results
+
+        if results:
+            video = random.choice(results)
+            video_id = video.video_id
+
+            html_content = f'''
+            <!DOCTYPE html>
+            <html>
+                <head>
+                    <style>
+                        :root {{
+                            --crt-opacity: 0.5;
+                            --crt-filter-contrast: 1.2;
+                            --crt-filter-brightness: 0.9;
+                            --crt-filter-saturate: 1.2;
+                        }}
+                        html, body {{
+                            margin: 0;
+                            padding: 0;
+                            height: 100%;
+                            width: 100%;
+                            background: black;
+                            overflow: hidden;
+                        }}
+                        #player {{
+                            position: absolute;
+                            top: 50%;
+                            left: 50%;
+                            transform: translate(-50%, -50%);
+                            width: 100%;
+                            height: 100%;
+                        }}
+                    </style>
+                    <!-- YouTube IFrame API -->
+                    <script src="https://www.youtube.com/iframe_api"></script>
+                    <!-- Qt WebChannel script -->
+                    <script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+                    <script type="text/javascript">
+                        var bridge = null;
+                        new QWebChannel(qt.webChannelTransport, function(channel) {{
+                            bridge = channel.objects.bridge;
+                        }});
+
+                        var player;
+                        function onYouTubeIframeAPIReady() {{
+                            player = new YT.Player('player', {{
+                                videoId: '{video_id}',
+                                events: {{
+                                    'onReady': onPlayerReady,
+                                    'onError': onPlayerError
+                                }},
+                                playerVars: {{
+                                    'autoplay': 1,
+                                    'controls': 1
+                                }}
+                            }});
+                        }}
+
+                        function onPlayerReady(event) {{
+                            console.log("Player is ready");
+                        }}
+
+                        function onPlayerError(event) {{
+                            console.log('Player error occurred:', event.data);
+                            if (bridge && bridge.onPlayerError) {{
+                                bridge.onPlayerError();
+                            }}
+                        }}
+
+                        // Function to set CRT intensity
+                        function setCRTIntensity(intensity) {{
+                            var normalizedIntensity = intensity / 100;
+                            document.documentElement.style.setProperty('--crt-opacity', normalizedIntensity);
+
+                            // Adjust filter values based on intensity
+                            var contrast = 1 + (normalizedIntensity * 0.5); // from 1 to 1.5
+                            var brightness = 1 - (normalizedIntensity * 0.3); // from 1 to 0.7
+                            var saturate = 1 + (normalizedIntensity * 0.5); // from 1 to 1.5
+
+                            document.documentElement.style.setProperty('--crt-filter-contrast', contrast);
+                            document.documentElement.style.setProperty('--crt-filter-brightness', brightness);
+                            document.documentElement.style.setProperty('--crt-filter-saturate', saturate);
+                        }}
+                    </script>
+                </head>
+                <body>
+                    <div id="player"></div>
+                </body>
+            </html>
+            '''
+
+            self.web_view.setHtml(html_content, QUrl(''))  # Empty base URL
+
+            self.update_crt_intensity(self.crt_slider.value())
 
     def set_static_filter(self):
         # Open a dialog to set the static filter
