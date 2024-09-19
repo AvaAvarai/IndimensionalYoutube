@@ -2,8 +2,9 @@ import sys
 import random
 from PyQt6.QtWidgets import (
     QApplication, QMainWindow, QWidget, QPushButton, QHBoxLayout,
-    QVBoxLayout, QSlider, QLabel, QInputDialog
+    QVBoxLayout, QSlider, QLabel
 )
+from PyQt6.QtGui import QIcon  # Import QIcon for setting the icon
 from PyQt6.QtWebEngineWidgets import QWebEngineView
 from PyQt6.QtCore import Qt, QObject, pyqtSlot, QUrl
 from PyQt6.QtWebChannel import QWebChannel
@@ -23,6 +24,9 @@ class RandomYouTubePlayer(QMainWindow):
     def __init__(self):
         super().__init__()
         self.static_filter = None  # Initialize the static filter before init_ui
+
+        # Set the application window icon
+        self.setWindowIcon(QIcon("icon.png"))  # Ensure icon.png is in the project directory
 
         # Load word list from dict.txt
         try:
@@ -254,6 +258,7 @@ class RandomYouTubePlayer(QMainWindow):
 
     def set_static_filter(self):
         # Open a dialog to set the static filter
+        from PyQt6.QtWidgets import QInputDialog
         text, ok = QInputDialog.getText(self, 'Search Keyword', 'Enter search term:')
         if ok and text:
             self.static_filter = text
