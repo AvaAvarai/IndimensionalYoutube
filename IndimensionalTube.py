@@ -4,9 +4,9 @@ from PyQt6.QtWidgets import (
     QApplication, QMainWindow, QWidget, QPushButton, QHBoxLayout,
     QVBoxLayout, QSlider, QLabel
 )
-from PyQt6.QtGui import QIcon  # Import QIcon for setting the icon
+from PyQt6.QtGui import QIcon, QPixmap, QPalette, QBrush
 from PyQt6.QtWebEngineWidgets import QWebEngineView
-from PyQt6.QtCore import Qt, QObject, pyqtSlot, QUrl
+from PyQt6.QtCore import Qt, QObject, pyqtSlot, QUrl, QSize
 from PyQt6.QtWebChannel import QWebChannel
 from pytube import Search
 
@@ -38,8 +38,18 @@ class RandomYouTubePlayer(QMainWindow):
 
         self.init_ui()
 
+    def set_background_image(self, widget):
+        # Load the background image and set it as a window background
+        crt_image = QPixmap("crt.png")
+
+        # Create a palette for the widget to set the background
+        palette = QPalette()
+        palette.setBrush(QPalette.ColorRole.Window, QBrush(crt_image.scaled(self.size(), aspectRatioMode=Qt.AspectRatioMode.KeepAspectRatioByExpanding)))
+        widget.setPalette(palette)
+        widget.setAutoFillBackground(True)
+
     def init_ui(self):
-        self.setWindowTitle('Indimensional YouTube')
+        self.setWindowTitle('IndimensionalTube')
         self.resize(800, 600)
 
         # Central widget
@@ -51,9 +61,25 @@ class RandomYouTubePlayer(QMainWindow):
         main_layout.setContentsMargins(0, 0, 0, 0)
         central_widget.setLayout(main_layout)
 
+        self.set_background_image(central_widget)
+
+        # Horizontal layout for centering
+        video_layout = QHBoxLayout()
+
+        # Spacer for horizontal centering
+        video_layout.addStretch()  # Left Spacer
+
         # Web view to display YouTube videos
         self.web_view = QWebEngineView()
-        main_layout.addWidget(self.web_view)
+
+        # Adjust size and position of the video player to fit within the CRT screen area
+        self.web_view.setFixedSize(625, 400)  # Adjust this size to fit the CRT screen
+        video_layout.addWidget(self.web_view)
+
+        # Spacer for horizontal centering
+        video_layout.addStretch()  # Right Spacer
+
+        main_layout.addLayout(video_layout)
 
         # Set up the WebChannel for communication between JavaScript and Python
         self.bridge = WebEngineBridge(self)
