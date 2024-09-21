@@ -1,3 +1,6 @@
+# Required pip packages:
+# pip install PyQt6 PyQt6-WebEngine pytube
+
 import sys
 import random
 from PyQt6.QtWidgets import (
